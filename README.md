@@ -18,20 +18,10 @@ Optional:
 If you want a delegate to be notified of begin/end parallax effect and changes in the motion attitude:
     
     parallaxView.parallaxDelegate = self;
-    
-    
-If you want the parallax view to refocus slowly and automatically:
-
-    parallaxView.refocusParallax = YES;
-    
-## Screenshot
-
-![screenshots](https://raw.github.com/acoomans/Parallax/master/ParallaxDemo/parallax.gif)
 
 ## Bugs
 
-- Device pitch is not handled correctly; behaves weirdly when the device is held straight up.
-- Some implementations details missing (see TODOs)
+- Some implementations details missing
 
 
 ## Credits

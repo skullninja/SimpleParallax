@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
-#import "ACAttitude.h"
+#import "OrientationAnalyzer.h"
 
 @class ACParallaxView;
 
@@ -18,17 +18,14 @@
 - (void)parallaxViewDidBeginParallax:(ACParallaxView*)parallaxView;
 - (void)parallaxViewWillEndParallax:(ACParallaxView*)parallaxView;
 - (void)parallaxViewDidEndParallax:(ACParallaxView*)parallaxView;
-- (void)parallaxView:(ACParallaxView*)parallaxView didChangeRelativeAttitude:(ACAttitude)attitude;
+- (void)parallaxView:(ACParallaxView*)parallaxView didCheckAcceleration:(CMAcceleration)acceleration offsetX:(int)x offsetY:(int)y offsetZ:(int)z;
 @end
 
-@interface ACParallaxView : UIView
+@interface ACParallaxView : UIView<OrientationAnalyzerDelegate>
 
 @property (nonatomic, weak) id<ACParallaxViewDelegate> parallaxDelegate;
 @property (nonatomic, assign, getter = isParallax) BOOL parallax;
-@property (nonatomic, assign) BOOL refocusParallax;
 
 @property (nonatomic, strong, readonly) CMMotionManager *sharedMotionManager;
-@property (nonatomic, assign) ACAttitude referenceAttitude;
-@property (nonatomic, assign, readonly) ACAttitude relativeAttitude;
 
 @end

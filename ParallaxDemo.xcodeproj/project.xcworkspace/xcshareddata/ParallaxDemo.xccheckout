@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>AA63EE49-F6EF-45BA-A5B8-08C8A42508F5</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ParallaxDemo</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>E565610F-32A9-4BC3-89B2-719D043625F4</key>
+		<string>https://github.com/skullninja/Parallax.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ParallaxDemo.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>E565610F-32A9-4BC3-89B2-719D043625F4</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/skullninja/Parallax.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>E565610F-32A9-4BC3-89B2-719D043625F4</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E565610F-32A9-4BC3-89B2-719D043625F4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Parallax</string>
+		</dict>
+	</array>
+</dict>
+</plist>

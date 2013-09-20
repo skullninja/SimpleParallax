@@ -20,14 +20,12 @@
     
     self.parallaxView.parallax = YES;
     self.parallaxView.parallaxDelegate = self;
-    self.parallaxView.refocusParallax = YES;
 }
 
 #pragma mark - ACParallaxViewDelegate
 
-- (void)parallaxView:(ACParallaxView*)parallaxView didChangeRelativeAttitude:(ACAttitude)attitude {
-    self.label.text = [NSString stringWithFormat:@"ACAttitude\nPitch: %f\nRoll: %f\nYaw: %f", attitude.pitch, attitude.roll, attitude.yaw];;
+- (void)parallaxView:(ACParallaxView*)parallaxView didCheckAcceleration:(CMAcceleration)acceleration offsetX:(int)x offsetY:(int)y offsetZ:(int)z {
+        self.label.text = [NSString stringWithFormat:@"Gravity\nX: %.2d\nY: %.2d\nZ: %.2d", x, y, z];
 }
-
 
 @end

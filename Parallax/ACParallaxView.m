@@ -10,18 +10,9 @@
 #import <math.h>
 #import <QuartzCore/QuartzCore.h>
 
-static CGFloat const parallaxRefocusDivider = 1000;
-static CGFloat const parallaxPerspectiveFactor = 1.0/-2000.0;
-static CGFloat const parallaxZPosition = -500.0;
-static CGFloat const parallaxScale = 1.25;
-static CGFloat const parallaxMotionPitchMinimumTreshold = 0.001;
 
 static CMMotionManager *sharedMotionManager;
 
-
-@interface ACParallaxView ()
-@property (nonatomic, assign) ACAttitude relativeAttitude;
-@end
 
 @implementation ACParallaxView
 
@@ -31,28 +22,11 @@ static CMMotionManager *sharedMotionManager;
 - (void)setParallax:(BOOL)parallax {
     _parallax = parallax;
     if (parallax) {
-        
-        // Apply perspective; must be done at parent layer :(
-        CATransform3D perspective = CATransform3DIdentity;
-        perspective.m34 = parallaxPerspectiveFactor;
-        self.superview.layer.sublayerTransform = perspective;
-        
-        self.layer.zPosition = parallaxZPosition;
-        
         [self beginParallaxUpdates];
     } else {
         [self endParallaxUpdates];
     }
 }
-
-- (void)setRelativeAttitude:(ACAttitude)relativeAttitude {
-    _relativeAttitude = relativeAttitude;
-    
-    if ([self.parallaxDelegate respondsToSelector:@selector(parallaxView:didChangeRelativeAttitude:)]) {
-        [self.parallaxDelegate parallaxView:self didChangeRelativeAttitude:relativeAttitude];
-    }
-}
-
 
 #pragma mark - motion
 
@@ -70,9 +44,10 @@ static CMMotionManager *sharedMotionManager;
 
 - (void)beginParallaxUpdates {
     
-    self.referenceAttitude = ACAttitudeInvalid;
-    
     CMMotionManager *motionManager = [self.class sharedMotionManager];
+    
+    OrientationAnalyzer *analyzer = [[OrientationAnalyzer alloc] init];
+    analyzer.delegate = self;
     
     if (motionManager.deviceMotionAvailable) {
         
@@ -84,57 +59,8 @@ static CMMotionManager *sharedMotionManager;
          startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue]
          withHandler: ^(CMDeviceMotion *motion, NSError *error) {
              
-             if (
-                 ACAttitudeIsInvalid(self.referenceAttitude) &&
-                 fabs(motion.attitude.pitch) > parallaxMotionPitchMinimumTreshold // discard the first wrong values returned by motion manager
-                 ) {
-                 self.referenceAttitude = ACAttitudeWithCMAttitude(motion.attitude);
-                 
-                 if ([self.parallaxDelegate respondsToSelector:@selector(parallaxViewDidBeginParallax:)]) {
-                     [self.parallaxDelegate parallaxViewDidBeginParallax:self];
-                 }
-                 
-             } else {
-                 
-                 if (self.refocusParallax) {
-                     self.referenceAttitude = ACAttitudeOffset(self.referenceAttitude,
-                                                               (motion.attitude.pitch - self.referenceAttitude.pitch) / parallaxRefocusDivider,
-                                                               (motion.attitude.roll - self.referenceAttitude.roll) / parallaxRefocusDivider,
-                                                               (motion.attitude.yaw - self.referenceAttitude.yaw) / parallaxRefocusDivider
-                                                               );
-                 }
-             }
+             [analyzer addDeviceMotionGravity:motion.gravity];
              
-             if (!ACAttitudeIsInvalid(self.referenceAttitude)) {
-                 ACAttitude attitude = ACAttitudeDifference(ACAttitudeWithCMAttitude(motion.attitude), self.referenceAttitude);
-
-                 attitude = ACAttitudeClamp(attitude,
-                                            M_PI/3.0,
-                                            M_PI/3.0,
-                                            1.0);
-                 
-                 self.relativeAttitude = attitude;
-                 
-                 //TODO: fix crazy values, especially when changing pitch
-                 
-                 CATransform3D transform = CATransform3DIdentity;
-
-                 // compensate for zPosition
-                 transform = CATransform3DScale(transform,
-                                                parallaxScale, parallaxScale, parallaxScale);
-                 
-                 transform = CATransform3DTranslate(transform,
-                                                    0, -tan(attitude.pitch)*30, 0);
-                 transform = CATransform3DTranslate(transform,
-                                                    -tan(attitude.roll)*30, 0, 0);
-
-                 transform = CATransform3DRotate(transform,
-                                                 attitude.pitch/2, 1, 0, 0);
-                 transform = CATransform3DRotate(transform,
-                                                 attitude.roll/2, 0, 1, 0);
-                 
-                 self.layer.transform = transform;
-             }
          }];
     }
 }
@@ -153,6 +79,18 @@ static CMMotionManager *sharedMotionManager;
             [self.parallaxDelegate parallaxViewDidEndParallax:self];
         }
     }
+}
+
+- (void)devicePositionUpdated:(int)devicePosition andGravity:(CMAcceleration)gravityVector offsetX:(int)x offsetY:(int)y offsetZ:(int)z {
+    if ([self.parallaxDelegate respondsToSelector:@selector(parallaxView:didCheckAcceleration:offsetX:offsetY:offsetZ:)]) {
+        [self.parallaxDelegate parallaxView:self didCheckAcceleration:gravityVector offsetX:x offsetY:y offsetZ:z];
+    }
+    
+    CATransform3D transform = CATransform3DIdentity;
+    
+    transform = CATransform3DMakeTranslation(x, y, z);
+    
+    self.layer.transform = transform;
 }
 
 @end
